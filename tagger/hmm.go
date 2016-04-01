@@ -180,7 +180,7 @@ func (t HMMTagger) viterbi(sentence []string) []*trellisState {
 			nextTrellis = append(nextTrellis, state)
 		}
 
-		// Swap 'trelli', recycling the old trellis by setting the lenght to 0.
+		// Swap 'trelli', recycling the old trellis by setting the length to 0.
 		trellis, nextTrellis = nextTrellis, trellis[:0]
 		beam = columnHighestProb - t.beamFactor
 	}
