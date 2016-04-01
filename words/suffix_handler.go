@@ -204,6 +204,10 @@ func insertWithLimit(slice []tagProb, limit, index int, value tagProb) []tagProb
 
 var _ WordHandler = LookupSuffixHandler{}
 
+// LookupSuffixHandler estimates the emmision probabilities P(w|t) using
+// word suffixes. In contrast to SuffixHandler, it uses map-based lookups.
+// The initial construction of a LookupSuffixHandler takes a small amount
+// of extra time. However, it is much faster during taggin.
 type LookupSuffixHandler struct {
 	upperProbs    map[string]map[model.Tag]float64
 	lowerProbs    map[string]map[model.Tag]float64
@@ -212,6 +216,9 @@ type LookupSuffixHandler struct {
 	maxLength     int
 }
 
+// NewLookupSuffixHandler constructs a LookupSuffixHandler from a
+// SuffixHandler. After construction, the SuffixHandler is discarded
+// after construction.
 func NewLookupSuffixHandler(sh SuffixHandler) LookupSuffixHandler {
 	return LookupSuffixHandler{
 		upperProbs:    convertTree(sh.upperTree, sh.maxTags),
@@ -222,6 +229,7 @@ func NewLookupSuffixHandler(sh SuffixHandler) LookupSuffixHandler {
 	}
 }
 
+// TagProbs estimates P(w|t) for a particular word 'w'.
 func (h LookupSuffixHandler) TagProbs(word string) map[model.Tag]float64 {
 	m := h.selectMap(word)
 

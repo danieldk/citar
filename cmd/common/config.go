@@ -21,6 +21,8 @@ type CitarConfig struct {
 	UnknownHandler string `toml:"unknown_handler"`
 }
 
+// UnknownWordHandler returns a word handler given the tagger
+// configuration and a data model.
 func (c CitarConfig) UnknownWordHandler(m model.Model) (words.WordHandler, error) {
 	if cons, ok := unknownHandlers[c.UnknownHandler]; ok {
 		return cons(m), nil
@@ -36,6 +38,8 @@ func defaultConfiguration() *CitarConfig {
 	}
 }
 
+// MustParseConfig parses the given configuration file. If the file could
+// not be parsed succesfully, the process is exited with an error message.
 func MustParseConfig(filename string) *CitarConfig {
 	f, err := os.Open(filename)
 	ExitIfError("Cannot open configuration file", err)
