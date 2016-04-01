@@ -1,3 +1,7 @@
+// Copyright 2016 The Citar Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 // Package words provides methods to estimate (word) emission probabilities.
 //
 // The parameters in Hidden Markov Models (HMM) come in two forms: transition and

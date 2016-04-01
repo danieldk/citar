@@ -1,3 +1,7 @@
+// Copyright 2016 The Citar Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package model
 
 // Tag represents a part of speech tag. The Capital field is used to
