@@ -39,7 +39,7 @@ func defaultConfiguration() *CitarConfig {
 }
 
 // MustParseConfig parses the given configuration file. If the file could
-// not be parsed succesfully, the process is exited with an error message.
+// not be parsed successfully, the process is exited with an error message.
 func MustParseConfig(filename string) *CitarConfig {
 	f, err := os.Open(filename)
 	ExitIfError("Cannot open configuration file", err)

@@ -204,7 +204,7 @@ func insertWithLimit(slice []tagProb, limit, index int, value tagProb) []tagProb
 
 var _ WordHandler = LookupSuffixHandler{}
 
-// LookupSuffixHandler estimates the emmision probabilities P(w|t) using
+// LookupSuffixHandler estimates the emission probabilities P(w|t) using
 // word suffixes. In contrast to SuffixHandler, it uses map-based lookups.
 // The initial construction of a LookupSuffixHandler takes a small amount
 // of extra time. However, it is much faster during taggin.
