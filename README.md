@@ -1,5 +1,10 @@
 # Citar - Trigram HMM part-of-speech tagger
 
+[![GoDoc](https://godoc.org/github.com/danieldk/citar?status.svg)](https://godoc.org/github.com/danieldk/citar)
+[![Report card](http://goreportcard.com/badge/danieldk/citar)](http://goreportcard.com/report/danieldk/citar)
+[![Build Status](https://travis-ci.org/danieldk/citar.svg?branch=master)](https://travis-ci.org/danieldk/citar)
+
+
 ## Introduction
 
 Citar is a  part-of-speech tagger, based on a trigram Hidden Markov Model
