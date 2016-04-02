@@ -9,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"runtime/pprof"
 
@@ -65,9 +64,7 @@ func main() {
 
 	if *cpuprofile != "" {
 		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			log.Fatal(err)
-		}
+		common.ExitIfError("cannot create CPU profile", err)
 		pprof.StartCPUProfile(f)
 		defer pprof.StopCPUProfile()
 	}

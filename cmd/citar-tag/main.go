@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/pprof"
 
 	"github.com/danieldk/citar/cmd/common"
 	"github.com/danieldk/citar/model"
@@ -26,6 +27,8 @@ func init() {
 		flag.PrintDefaults()
 	}
 }
+
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
 	flag.Parse()
@@ -63,6 +66,13 @@ func main() {
 	bufWriter := bufio.NewWriter(outputFile)
 	defer bufWriter.Flush()
 	writer := conllx.NewWriter(bufWriter)
+
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		common.ExitIfError("cannot create CPU profile", err)
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
 	for {
 		sent, err := reader.ReadSentence()
