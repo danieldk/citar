@@ -21,14 +21,20 @@ import (
 	"github.com/danieldk/conllx"
 )
 
-const nFolds = 10
+func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] config input.conllx\n\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+}
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var nFolds = flag.Int("nfolds", 10, "number of cross-validation folds")
 
 func trainFolds(testFold int) conllx.FoldSet {
 	folds := make(conllx.FoldSet)
 
-	for fold := 0; fold < nFolds; fold++ {
+	for fold := 0; fold < *nFolds; fold++ {
 		if fold != testFold {
 			folds[fold] = nil
 		}
@@ -41,6 +47,12 @@ func main() {
 	flag.Parse()
 
 	if flag.NArg() != 2 {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	if *nFolds < 2 {
+		fmt.Fprintln(os.Stderr, "Data should be splitted in at least 2 folds.")
 		os.Exit(1)
 	}
 
@@ -60,7 +72,7 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	for fold := 0; fold < nFolds; fold++ {
+	for fold := 0; fold < *nFolds; fold++ {
 		fc := model.NewFrequencyCollector()
 
 		err := processFolds(flag.Arg(1), trainFolds(fold), func(sent []conllx.Token) error {
@@ -112,7 +124,7 @@ func processFolds(filename string, folds conllx.FoldSet, fun func(sent []conllx.
 
 	reader := conllx.NewReader(bufio.NewReader(f))
 
-	trainReader, err := conllx.NewSplittingReader(reader, nFolds, folds)
+	trainReader, err := conllx.NewSplittingReader(reader, *nFolds, folds)
 	if err != nil {
 		return err
 	}

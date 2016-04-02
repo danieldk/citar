@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"encoding/gob"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 
@@ -19,10 +20,18 @@ import (
 	"github.com/danieldk/conllx"
 )
 
+func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [options] config [input.conllx] [output.conllx]\n\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+}
+
 func main() {
 	flag.Parse()
 
 	if flag.NArg() == 0 || flag.NArg() > 3 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
