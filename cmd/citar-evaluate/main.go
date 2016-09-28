@@ -29,6 +29,7 @@ func init() {
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 var nFolds = flag.Int("nfolds", 10, "number of cross-validation folds")
+var closedClassFilename = flag.String("closed-class", "", "file with closed-class tags")
 
 func trainFolds(testFold int) conllx.FoldSet {
 	folds := make(conllx.FoldSet)
@@ -69,6 +70,8 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
+	closedClass := common.MustLoadClosedClass(*closedClassFilename)
+
 	for fold := 0; fold < *nFolds; fold++ {
 		fc := model.NewFrequencyCollector()
 
@@ -77,7 +80,7 @@ func main() {
 		})
 		common.ExitIfError("Error processing training folds", err)
 
-		model := fc.Model()
+		model := fc.ModelWithClosedClass(closedClass)
 
 		sh, err := config.UnknownWordHandler(model)
 		common.ExitIfError("Could construct unknown word handler", err)

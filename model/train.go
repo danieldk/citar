@@ -35,7 +35,14 @@ func NewFrequencyCollector() FrequencyCollector {
 
 // Model returns the collected frequencies as a model.
 func (c FrequencyCollector) Model() Model {
-	return newModel(c.numberer, c.lexicon, c.unigrams, c.bigrams, c.trigrams)
+	return newModel(c.numberer, c.lexicon, c.unigrams, c.bigrams, c.trigrams,
+		make(map[string]interface{}))
+}
+
+// ModelWithClosedClass returns the collected frequencies as a model, the
+// closed class set can be used by e.g. word handlers.
+func (c FrequencyCollector) ModelWithClosedClass(closedClassTags ClosedClassSet) Model {
+	return newModel(c.numberer, c.lexicon, c.unigrams, c.bigrams, c.trigrams, closedClassTags)
 }
 
 // Process a sentence.

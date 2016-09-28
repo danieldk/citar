@@ -36,14 +36,14 @@ func newWordSuffixTree(unigramFreqs map[model.Unigram]int,
 	}
 }
 
-func (t wordSuffixTree) addWord(word string, tf map[model.Tag]int) {
+func (t wordSuffixTree) addWord(word string, tf map[model.Tag]int, skip map[uint]interface{}) {
 	runes := []rune(word)
 	reverse(runes)
 	if len(runes) > t.maxLength {
 		runes = runes[0:t.maxLength]
 	}
 
-	t.root.addSuffix(runes, tf)
+	t.root.addSuffix(runes, tf, skip)
 }
 
 func (t wordSuffixTree) suffixTagProbs(word string) map[model.Tag]float64 {
@@ -81,9 +81,13 @@ func newTreeNode() *treeNode {
 	}
 }
 
-func (n *treeNode) addSuffix(revSuffix []rune, tf map[model.Tag]int) {
+func (n *treeNode) addSuffix(revSuffix []rune, tf map[model.Tag]int, skip map[uint]interface{}) {
 	// Add the tag frequencies to the current node.
 	for tag, freq := range tf {
+		if _, ok := skip[tag.Tag]; ok {
+			continue
+		}
+
 		if _, ok := n.tagFreqs[tag]; ok {
 			n.tagFreqs[tag] += freq
 		} else {
@@ -106,7 +110,7 @@ func (n *treeNode) addSuffix(revSuffix []rune, tf map[model.Tag]int) {
 		n.children[revSuffix[0]] = child
 	}
 
-	child.addSuffix(revSuffix[1:], tf)
+	child.addSuffix(revSuffix[1:], tf, skip)
 }
 
 func (n *treeNode) suffixTagProbs(theta float64, uf map[model.Unigram]int, revSuffix []rune,

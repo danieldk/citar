@@ -73,6 +73,11 @@ func NewSuffixHandler(config SuffixHandlerConfig, m model.Model) SuffixHandler {
 	skip[m.TagNumberer().Number(model.StartToken)] = nil
 	skip[m.TagNumberer().Number(model.EndToken)] = nil
 
+	// An unknown word guesser should not use closed-class tags.
+	for tag := range m.ClosedClassTags() {
+		skip[m.TagNumberer().Number(tag)] = nil
+	}
+
 	theta := calcTheta(m.UnigramFreqs(), skip)
 
 	upperTree := newWordSuffixTree(m.UnigramFreqs(), skip, theta, config.MaxSuffixLen)
@@ -104,7 +109,7 @@ func NewSuffixHandler(config SuffixHandlerConfig, m model.Model) SuffixHandler {
 		}
 
 		if t := sh.selectSuffixTreeWithCutoffs(config, word, wordFreq); t != nil {
-			t.addWord(word, tagFreqs)
+			t.addWord(word, tagFreqs, skip)
 		}
 	}
 

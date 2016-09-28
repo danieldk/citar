@@ -10,6 +10,8 @@ import (
 	"fmt"
 )
 
+type ClosedClassSet map[string]interface{}
+
 var _ gob.GobEncoder = Model{}
 var _ gob.GobDecoder = &Model{}
 
@@ -20,6 +22,7 @@ type Model struct {
 	unigramFreqs map[Unigram]int
 	bigramFreqs  map[Bigram]int
 	trigramFreqs map[Trigram]int
+	closedClass  ClosedClassSet
 }
 
 type encodedModel struct {
@@ -28,18 +31,24 @@ type encodedModel struct {
 	UnigramFreqs map[Unigram]int
 	BigramFreqs  map[Bigram]int
 	TrigramFreqs map[Trigram]int
+	ClosedClass  ClosedClassSet
 }
 
 func newModel(tagNumberer *StringNumberer, wordTagFreqs map[string]map[Tag]int,
 	unigramFreqs map[Unigram]int, bigramFreqs map[Bigram]int,
-	trigramFreqs map[Trigram]int) Model {
+	trigramFreqs map[Trigram]int, closedClass ClosedClassSet) Model {
 	return Model{
 		tagNumberer:  tagNumberer,
 		wordTagFreqs: wordTagFreqs,
 		unigramFreqs: unigramFreqs,
 		bigramFreqs:  bigramFreqs,
 		trigramFreqs: trigramFreqs,
+		closedClass:  closedClass,
 	}
+}
+
+func (m Model) ClosedClassTags() ClosedClassSet {
+	return m.closedClass
 }
 
 // WordTagFreqs returns the word-tag frequencies in the training data.
@@ -87,6 +96,7 @@ func (m *Model) GobDecode(data []byte) error {
 	m.unigramFreqs = em.UnigramFreqs
 	m.bigramFreqs = em.BigramFreqs
 	m.trigramFreqs = em.TrigramFreqs
+	m.closedClass = em.ClosedClass
 
 	return nil
 }
@@ -99,6 +109,7 @@ func (m Model) GobEncode() ([]byte, error) {
 		UnigramFreqs: m.unigramFreqs,
 		BigramFreqs:  m.bigramFreqs,
 		TrigramFreqs: m.trigramFreqs,
+		ClosedClass:  m.closedClass,
 	}
 
 	var buf bytes.Buffer

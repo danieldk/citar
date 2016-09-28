@@ -24,6 +24,8 @@ func init() {
 	}
 }
 
+var closedClassFilename = flag.String("closed-class", "", "file with closed-class tags")
+
 func main() {
 	flag.Parse()
 
@@ -33,6 +35,8 @@ func main() {
 	}
 
 	config := common.MustParseConfig(flag.Arg(0))
+
+	closedClass := common.MustLoadClosedClass(*closedClassFilename)
 
 	f, err := os.Open(flag.Arg(1))
 	common.ExitIfError("Cannot open training data", err)
@@ -61,7 +65,7 @@ func main() {
 		common.ExitIfError("Cannot process sentence", err)
 	}
 
-	model := fc.Model()
+	model := fc.ModelWithClosedClass(closedClass)
 	enc := gob.NewEncoder(bufOut)
 	err = enc.Encode(model)
 	common.ExitIfError("Cannot encode model", err)
