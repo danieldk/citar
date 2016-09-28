@@ -36,7 +36,7 @@ func NewFrequencyCollector() FrequencyCollector {
 // Model returns the collected frequencies as a model.
 func (c FrequencyCollector) Model() Model {
 	return newModel(c.numberer, c.lexicon, c.unigrams, c.bigrams, c.trigrams,
-		make(map[string]interface{}))
+		make(ClosedClassSet))
 }
 
 // ModelWithClosedClass returns the collected frequencies as a model, the
