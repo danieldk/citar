@@ -2,7 +2,6 @@ package common
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
 
@@ -28,7 +27,6 @@ func MustLoadClosedClass(filename string) model.ClosedClassSet {
 
 		if tag != "" {
 			tags[tag] = nil
-			fmt.Fprintf(os.Stderr, "Added closed-class tag: %s\n", tag)
 		}
 	}
 
