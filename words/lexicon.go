@@ -6,6 +6,7 @@ package words
 
 import (
 	"math"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -84,6 +85,68 @@ func calculateWordTagProbs(wtf map[string]map[model.Tag]int, uf map[model.Unigra
 			p := math.Log(float64(freq) / float64(uf[model.Unigram{T1: tag}]))
 			probs[word][tag] = p
 		}
+	}
+
+	return probs
+}
+
+type Substitution struct {
+	Pattern     *regexp.Regexp
+	Replacement string
+}
+
+type SubstLexicon struct {
+	lexicon       Lexicon
+	substitutions []Substitution
+	fallback      WordHandler
+}
+
+// NewSubstLexicon construct a new Lexicon with substitution rules from a
+// lexicon. If the lexicon does not return results for a word, the
+// substitutions are applied and another lookup is attempted.
+func NewSubstLexicon(lexicon Lexicon, substitutions []Substitution) SubstLexicon {
+	return SubstLexicon{
+		lexicon:       lexicon,
+		substitutions: substitutions,
+		fallback:      nil,
+	}
+}
+
+// NewSubstLexiconWithFallback construct a new Lexicon with substitution rules
+// from a lexicon and a fallback. If the lexicon does not return results for
+// a word, the substitutions are applied and another lookup is attempted. If
+// this fails as well, the fallback is used.
+func NewSubstLexiconWithFallback(lexicon Lexicon, fallback WordHandler, substitutions []Substitution) SubstLexicon {
+	return SubstLexicon{
+		lexicon:       lexicon,
+		substitutions: substitutions,
+		fallback:      fallback,
+	}
+}
+
+// TagProbs returns P(w|t) for a particular word 'w'. Probabilities are only
+// returned for tags with which the word occurred in the training data, except
+// if the word did not occur in the training data and a fallback is used.
+func (l SubstLexicon) TagProbs(word string) map[model.Tag]float64 {
+	probs := l.lexicon.TagProbs(word)
+	if len(probs) != 0 {
+		return probs
+	}
+
+	substWord := word
+	// Attempt substitutions
+	for _, subst := range l.substitutions {
+		substWord = subst.Pattern.ReplaceAllString(substWord, subst.Replacement)
+	}
+
+	probs = l.lexicon.TagProbs(substWord)
+	if len(probs) != 0 {
+		return probs
+	}
+
+	// Try the fallback word handler, if it is available.
+	if l.fallback != nil {
+		return l.fallback.TagProbs(word)
 	}
 
 	return probs

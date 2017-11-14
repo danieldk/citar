@@ -71,6 +71,7 @@ func main() {
 	}
 
 	closedClass := common.MustLoadClosedClass(*closedClassFilename)
+	substitutions := common.MustLoadSubstitutions(config.Substitutions)
 
 	for fold := 0; fold < *nFolds; fold++ {
 		fc := model.NewFrequencyCollector()
@@ -83,9 +84,15 @@ func main() {
 		model := fc.ModelWithClosedClass(closedClass)
 
 		sh, err := config.UnknownWordHandler(model)
-		common.ExitIfError("Could construct unknown word handler", err)
+		common.ExitIfError("Could not construct unknown word handler", err)
 
-		lh := words.NewLexiconWithFallback(model.WordTagFreqs(), model.UnigramFreqs(), sh)
+		var lh words.WordHandler
+		if len(substitutions) == 0 {
+			lh = words.NewLexiconWithFallback(model.WordTagFreqs(), model.UnigramFreqs(), sh)
+		} else {
+			lh = words.NewSubstLexiconWithFallback(words.NewLexicon(model.WordTagFreqs(), model.UnigramFreqs()), sh, substitutions)
+		}
+
 		lim := trigrams.NewLinearInterpolationModel(model)
 		tagger := tagger.NewHMMTagger(model, lh, lim, 1000.0)
 

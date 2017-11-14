@@ -44,6 +44,8 @@ func main() {
 	common.ExitIfError("Cannot open model", err)
 	defer modelFile.Close()
 
+	substitutions := common.MustLoadSubstitutions(config.Substitutions)
+
 	inputFile := common.FileOrStdin(flag.Args(), 1)
 	defer inputFile.Close()
 
@@ -58,7 +60,12 @@ func main() {
 	sh, err := config.UnknownWordHandler(model)
 	common.ExitIfError("Could construct unknown word handler", err)
 
-	lh := words.NewLexiconWithFallback(model.WordTagFreqs(), model.UnigramFreqs(), sh)
+	var lh words.WordHandler
+	if len(substitutions) == 0 {
+		lh = words.NewLexiconWithFallback(model.WordTagFreqs(), model.UnigramFreqs(), sh)
+	} else {
+		lh = words.NewSubstLexiconWithFallback(words.NewLexicon(model.WordTagFreqs(), model.UnigramFreqs()), sh, substitutions)
+	}
 	lim := trigrams.NewLinearInterpolationModel(model)
 	tagger := tagger.NewHMMTagger(model, lh, lim, 1000.0)
 

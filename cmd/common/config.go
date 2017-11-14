@@ -18,6 +18,7 @@ import (
 // CitarConfig stores the configuration of citar.
 type CitarConfig struct {
 	Model          string
+	Substitutions  string
 	UnknownHandler string `toml:"unknown_handler"`
 }
 
@@ -34,6 +35,7 @@ func (c CitarConfig) UnknownWordHandler(m model.Model) (words.WordHandler, error
 func defaultConfiguration() *CitarConfig {
 	return &CitarConfig{
 		Model:          "model.gob",
+		Substitutions:  "",
 		UnknownHandler: "lookup",
 	}
 }
@@ -49,6 +51,7 @@ func MustParseConfig(filename string) *CitarConfig {
 	ExitIfError("Cannot parse configuration file", err)
 
 	config.Model = relToConfig(filename, config.Model)
+	config.Substitutions = relToConfig(filename, config.Substitutions)
 
 	return config
 }
