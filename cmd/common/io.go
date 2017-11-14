@@ -2,6 +2,7 @@ package common
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -60,10 +61,7 @@ func MustLoadSubstitutions(filename string) []words.Substitution {
 			}
 
 			pattern := regexp.MustCompile(parts[0])
-
 			substs = append(substs, words.Substitution{pattern, parts[1]})
-
-			fmt.Fprintf(os.Stderr, "Added subsitution: %s -> %s\n", parts[0], parts[1])
 		}
 	}
 
