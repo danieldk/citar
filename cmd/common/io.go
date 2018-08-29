@@ -61,7 +61,7 @@ func MustLoadSubstitutions(filename string) []words.Substitution {
 			}
 
 			pattern := regexp.MustCompile(parts[0])
-			substs = append(substs, words.Substitution{pattern, parts[1]})
+			substs = append(substs, words.Substitution{Pattern: pattern, Replacement: parts[1]})
 		}
 	}
 
