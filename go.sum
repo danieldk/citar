@@ -1,0 +1,4 @@
+github.com/BurntSushi/toml v0.3.0 h1:e1/Ivsx3Z0FVTV0NSOv/aVgbUWyQuzj7DDnFblkRvsY=
+github.com/BurntSushi/toml v0.3.0/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/danieldk/conllx v1.0.0 h1:MKjPSzbdXnE+b+2lCewzYJPW51+nSENDlgtu7aNWqmQ=
+github.com/danieldk/conllx v1.0.0/go.mod h1:swCzJt3CTb8YZJpz46GOv9NHJ/rpIy29jMn1vhXON1A=
